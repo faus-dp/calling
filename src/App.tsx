@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import gifExplanation from './assets/gif-explanation.gif'
 
 function App() {
   const [isCallingDropdownOpen, setIsCallingDropdownOpen] = useState(false)
   const [isCallingWindowOpen, setIsCallingWindowOpen] = useState(false)
-  const [isCallingEnabled, setIsCallingEnabled] = useState(false)
+  const [isDropdownCallingEnabled, setIsDropdownCallingEnabled] = useState(false)
+  const [isWindowCallingEnabled, setIsWindowCallingEnabled] = useState(false)
+  const [isUISwapped, setIsUISwapped] = useState(false)
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 })
   const [isDragging, setIsDragging] = useState(false)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
@@ -16,16 +19,24 @@ function App() {
     setIsCallingWindowOpen(true)
     // Position popup below navbar and next to sidebar
     setPopupPosition({ x: 90, y: 70 })
-    // For Approach 2, enable calling immediately
-    if (selectedApproach === 'Approach 2') {
-      setIsCallingEnabled(true)
+    // For Updated UX, enable calling immediately in both places
+    if (selectedApproach === 'Updated UX') {
+      setIsDropdownCallingEnabled(true)
+      setIsWindowCallingEnabled(true)
     }
   }
 
   const handleCloseCallingWindow = () => {
     // Close the calling window and reset to initial state
     setIsCallingWindowOpen(false)
-    setIsCallingEnabled(false)
+    setIsDropdownCallingEnabled(false)
+    setIsWindowCallingEnabled(false)
+    setIsUISwapped(false)
+  }
+
+  const handleSwapUI = () => {
+    // Swap UI between dropdown and calling window (Updated UX only)
+    setIsUISwapped(!isUISwapped)
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -62,8 +73,8 @@ function App() {
 
   // Render the appropriate approach
   const renderApproach = () => {
-    if (selectedApproach === 'Approach 2') {
-      // Approach 2 - Duplicate of Current Experience (will be modified per user instructions)
+    if (selectedApproach === 'Updated UX') {
+      // Updated UX - Duplicate of Current Experience (will be modified per user instructions)
       return renderApproach2()
     }
     // Default: Current Experience (Approach 1)
@@ -100,7 +111,11 @@ function App() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
                   <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
                 </svg>
-                <span className="phone-close-icon">✕</span>
+                {isCallingWindowOpen ? (
+                  <span className="phone-status-dot phone-status-active"></span>
+                ) : (
+                  <span className="phone-close-icon">✕</span>
+                )}
               </div>
             </button>
             
@@ -123,7 +138,7 @@ function App() {
                     </p>
                     <button className="calling-open-btn" onClick={handleOpenCallingWindow}>Open calling window</button>
                   </>
-                ) : !isCallingEnabled ? (
+                ) : !isDropdownCallingEnabled ? (
                   // Show disabled state when popup is open
                   <>
                     <div className="calling-dropdown-header">
@@ -138,7 +153,7 @@ function App() {
                     <div className="calling-notice-disabled">
                       <p>Calling from this tab is currently disabled. Enabling calling in this tab will disable calling in other tabs.</p>
                     </div>
-                    <button className="calling-enable-btn-dropdown" onClick={() => setIsCallingEnabled(true)}>ENABLE CALLING</button>
+                    <button className="calling-enable-btn-dropdown" onClick={() => setIsDropdownCallingEnabled(true)}>ENABLE CALLING</button>
                   </>
                 ) : (
                   // Show enabled calling interface with contact list
@@ -352,59 +367,25 @@ function App() {
             </div>
 
             <div className="calling-window-content">
-              {!isCallingEnabled ? (
+              {!isWindowCallingEnabled ? (
                 // Before calling is enabled
                 <>
-                  <div className="calling-info-banner">
-                    <button className="calling-info-close" onClick={() => {}}>✕</button>
-                    <h3 className="calling-info-title">Keep this calling window open to receive incoming calls.</h3>
-                    <p className="calling-info-text">
-                      This space is where your call connection is maintained. It must be open to make, receive, and be on active calls. <a href="#" className="calling-info-link">Learn more</a>
-                    </p>
-                    <a href="#" className="calling-dont-show">Don't show this again</a>
-                  </div>
+                  <h2 className="calling-disabled-heading">Calling Disabled</h2>
 
                   <div className="calling-notice">
                     <p>Calling from this tab is currently disabled. Enabling calling in this tab will disable calling in other tabs.</p>
                   </div>
 
-                  <button className="calling-enable-btn" onClick={() => setIsCallingEnabled(true)}>ENABLE CALLING</button>
+                  <button className="calling-enable-btn" onClick={() => setIsWindowCallingEnabled(true)}>ENABLE CALLING</button>
                 </>
               ) : (
-                // After calling is enabled - show Dialpad UI
+                // After calling is enabled - show "You're all set" message
                 <>
-                  <div className="dialpad-container">
-                    <div className="dialpad-input-section">
-                      <input 
-                        type="text" 
-                        className="dialpad-number-input" 
-                        placeholder="Enter number"
-                        readOnly
-                      />
-                    </div>
-                    
-                    <div className="dialpad-grid">
-                      <button className="dialpad-btn">1</button>
-                      <button className="dialpad-btn">2<span className="dialpad-letters">ABC</span></button>
-                      <button className="dialpad-btn">3<span className="dialpad-letters">DEF</span></button>
-                      <button className="dialpad-btn">4<span className="dialpad-letters">GHI</span></button>
-                      <button className="dialpad-btn">5<span className="dialpad-letters">JKL</span></button>
-                      <button className="dialpad-btn">6<span className="dialpad-letters">MNO</span></button>
-                      <button className="dialpad-btn">7<span className="dialpad-letters">PQRS</span></button>
-                      <button className="dialpad-btn">8<span className="dialpad-letters">TUV</span></button>
-                      <button className="dialpad-btn">9<span className="dialpad-letters">WXYZ</span></button>
-                      <button className="dialpad-btn">*</button>
-                      <button className="dialpad-btn">0<span className="dialpad-letters">+</span></button>
-                      <button className="dialpad-btn">#</button>
-                    </div>
-                    
-                    <div className="dialpad-action-buttons">
-                      <button className="dialpad-call-btn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                          <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
-                        </svg>
-                      </button>
-                    </div>
+                  <div className="all-set-container">
+                    <h1 className="all-set-title">You're all set</h1>
+                    <p className="all-set-subtitle">Your main calling workspace is in HubSpot</p>
+                    <p className="all-set-keep-open">Keep this window open in the background</p>
+                    <a href="#" className="all-set-switch-link">Switch to this window if you prefer</a>
                   </div>
                 </>
               )}
@@ -427,12 +408,12 @@ function App() {
               {selectedApproach === 'Current Experience' && <span className="approach-check">✓</span>}
             </div>
             <div 
-              className={`prototype-menu-item ${selectedApproach === 'Approach 2' ? 'active' : ''}`}
-              onClick={() => setSelectedApproach('Approach 2')}
+              className={`prototype-menu-item ${selectedApproach === 'Updated UX' ? 'active' : ''}`}
+              onClick={() => setSelectedApproach('Updated UX')}
             >
               <span className="approach-number">2</span>
-              <span className="approach-name">Approach 2</span>
-              {selectedApproach === 'Approach 2' && <span className="approach-check">✓</span>}
+              <span className="approach-name">Updated UX</span>
+              {selectedApproach === 'Updated UX' && <span className="approach-check">✓</span>}
             </div>
             <div 
               className={`prototype-menu-item ${selectedApproach === 'Approach 3' ? 'active' : ''}`}
@@ -492,7 +473,11 @@ function App() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
                   <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
                 </svg>
-                <span className="phone-close-icon">✕</span>
+                {isCallingWindowOpen ? (
+                  <span className="phone-status-dot phone-status-active"></span>
+                ) : (
+                  <span className="phone-close-icon">✕</span>
+                )}
               </div>
             </button>
             
@@ -515,8 +500,8 @@ function App() {
                     </p>
                     <button className="calling-open-btn" onClick={handleOpenCallingWindow}>Open calling window</button>
                   </>
-                ) : (
-                  // Show enabled calling interface with contact list
+                ) : !isUISwapped ? (
+                  // Show enabled calling interface with contact list (normal state)
                   <>
                     <div className="calling-dropdown-header">
                       <div className="calling-dropdown-branding">
@@ -620,6 +605,28 @@ function App() {
                       </div>
                     </div>
                   </>
+                ) : (
+                  // Show "You're all set" message when UI is swapped
+                  <>
+                    <div className="calling-dropdown-header">
+                      <div className="calling-dropdown-branding">
+                        <img 
+                          src="https://front.com/_next/image?url=https%3A%2F%2Ffront.com%2Fassets%2Fintegrations%2Fdialpad%2FDialpad-Icon-Circle-Gradient-2x.png&w=256&q=75" 
+                          alt="Dialpad" 
+                          className="dialpad-icon"
+                        />
+                        <span className="dialpad-name">Dialpad (Beta)</span>
+                        <span className="dialpad-arrow">▼</span>
+                      </div>
+                      <button className="calling-minimize-btn" title="Minimize">−</button>
+                    </div>
+                    <div className="swapped-all-set-container">
+                      <h1 className="swapped-all-set-title">You're all set</h1>
+                      <p className="swapped-all-set-subtitle">Your main calling workspace is in this window</p>
+                      <p className="swapped-all-set-keep-open">Keep the calling window open in the background</p>
+                      <button className="enable-calling-here-btn" onClick={handleSwapUI}>ENABLE CALLING HERE</button>
+                    </div>
+                  </>
                 )}
               </div>
             )}
@@ -675,7 +682,8 @@ function App() {
             style={{
               left: `${popupPosition.x}px`,
               top: `${popupPosition.y}px`,
-              position: 'fixed'
+              position: 'fixed',
+              width: isUISwapped ? '400px' : '350px'
             }}
           >
             {/* Chrome Window Header */}
@@ -727,13 +735,110 @@ function App() {
             </div>
 
             <div className="calling-window-content">
-              {/* Show "You're all set" content */}
-              <div className="approach2-all-set">
-                <h1 className="approach2-title">You're all set</h1>
-                <p className="approach2-subtitle">Your main calling workspace is in HubSpot</p>
-                <p className="approach2-keep-open">Keep this window open in the background</p>
-                <a href="#" className="approach2-switch-link">Switch to this window if you prefer</a>
-              </div>
+              {!isUISwapped ? (
+                // Show "You're all set" content when not swapped
+                <div className="approach2-all-set">
+                  <h1 className="approach2-title">You're all set</h1>
+                  <p className="approach2-subtitle">Your main calling workspace is in HubSpot</p>
+                  <img src={gifExplanation} alt="Where to go" className="explanation-gif" />
+                  <p className="approach2-keep-open">Keep this window open in the background</p>
+                  <a href="#" className="approach2-switch-link" onClick={(e) => { e.preventDefault(); handleSwapUI(); }}>Switch to this window if you prefer</a>
+                </div>
+              ) : (
+                // Show dialpad UI when swapped
+                <div className="popup-dialpad-container">
+                  {/* Dark Control Bar */}
+                  <div className="calling-control-bar popup-control-bar">
+                    <div className="control-bar-left">
+                      <img 
+                        src="https://front.com/_next/image?url=https%3A%2F%2Ffront.com%2Fassets%2Fintegrations%2Fdialpad%2FDialpad-Icon-Circle-Gradient-2x.png&w=256&q=75" 
+                        alt="Dialpad" 
+                        className="control-icon dialpad-square"
+                      />
+                      <span className="control-icon">🎧</span>
+                      <span className="control-icon">◀</span>
+                      <span className="control-icon">▶</span>
+                      <span className="control-icon">🔍</span>
+                    </div>
+                    <div className="control-bar-right">
+                      <div className="user-info">
+                        <span className="user-name">Faustino Gaitan</span>
+                        <span className="user-ext">Ext 00057</span>
+                        <div className="user-avatar"></div>
+                        <span className="user-dropdown">▼</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="popup-cti-content">
+                    {/* Contact Centers Section */}
+                    <div className="contact-centers-section">
+                      <div className="section-header">
+                        <span className="section-title">CONTACT CENTERS</span>
+                        <div className="section-links">
+                          <a href="#" className="section-link">LIVE DASHBOARD</a>
+                          <a href="#" className="section-link">MANAGE</a>
+                        </div>
+                      </div>
+                      <div className="off-duty-dropdown">
+                        <span className="off-duty-icon">🔇</span>
+                        <span className="off-duty-text">Off Duty</span>
+                        <span className="off-duty-arrow">▼</span>
+                      </div>
+                    </div>
+
+                    {/* Tabs */}
+                    <div className="calling-tabs">
+                      <div className="calling-tab active">RECENT</div>
+                      <div className="calling-tab">FAVORITES</div>
+                    </div>
+
+                    {/* Contact List */}
+                    <div className="contact-list popup-contact-list">
+                      <div className="contact-item">
+                        <div className="contact-avatar hash-avatar">#</div>
+                        <span className="contact-name">Faustino (GV) Gaitan</span>
+                        <span className="contact-phone">(720) 835-5740</span>
+                      </div>
+                      <div className="contact-item">
+                        <div className="contact-avatar"></div>
+                        <span className="contact-name">Faustino Gaitan</span>
+                        <span className="contact-phone">(415) 805-2481</span>
+                      </div>
+                      <div className="contact-item">
+                        <div className="contact-avatar"></div>
+                        <span className="contact-name">Fabian Gargaglione</span>
+                        <span className="contact-phone">(202) 750-4572</span>
+                      </div>
+                      <div className="contact-item">
+                        <div className="contact-avatar"></div>
+                        <span className="contact-name">bianca artola</span>
+                        <span className="contact-phone">(201) 351-8424</span>
+                      </div>
+                      <div className="contact-item">
+                        <div className="contact-avatar"></div>
+                        <span className="contact-name">Nav Kaur</span>
+                        <span className="contact-phone">(669) 255-0019</span>
+                      </div>
+                      <div className="contact-item">
+                        <div className="contact-avatar"></div>
+                        <span className="contact-name">Joan Gil</span>
+                        <span className="contact-phone">(213) 262-5762</span>
+                      </div>
+                      <div className="contact-item">
+                        <div className="contact-avatar"></div>
+                        <span className="contact-name">Hernan Gallo</span>
+                        <span className="contact-phone">(216) 307-1585</span>
+                      </div>
+                      <div className="contact-item">
+                        <div className="contact-avatar dialbot-avatar">Q</div>
+                        <span className="contact-name">Dialbot</span>
+                        <span className="contact-phone">(415) 938-9005</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -753,12 +858,12 @@ function App() {
               {selectedApproach === 'Current Experience' && <span className="approach-check">✓</span>}
             </div>
             <div 
-              className={`prototype-menu-item ${selectedApproach === 'Approach 2' ? 'active' : ''}`}
-              onClick={() => setSelectedApproach('Approach 2')}
+              className={`prototype-menu-item ${selectedApproach === 'Updated UX' ? 'active' : ''}`}
+              onClick={() => setSelectedApproach('Updated UX')}
             >
               <span className="approach-number">2</span>
-              <span className="approach-name">Approach 2</span>
-              {selectedApproach === 'Approach 2' && <span className="approach-check">✓</span>}
+              <span className="approach-name">Updated UX</span>
+              {selectedApproach === 'Updated UX' && <span className="approach-check">✓</span>}
             </div>
             <div 
               className={`prototype-menu-item ${selectedApproach === 'Approach 3' ? 'active' : ''}`}
