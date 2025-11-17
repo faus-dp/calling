@@ -415,22 +415,6 @@ function App() {
               <span className="approach-name">Updated UX</span>
               {selectedApproach === 'Updated UX' && <span className="approach-check">✓</span>}
             </div>
-            <div 
-              className={`prototype-menu-item ${selectedApproach === 'Approach 3' ? 'active' : ''}`}
-              onClick={() => setSelectedApproach('Approach 3')}
-            >
-              <span className="approach-number">3</span>
-              <span className="approach-name">Approach 3</span>
-              {selectedApproach === 'Approach 3' && <span className="approach-check">✓</span>}
-            </div>
-            <div 
-              className={`prototype-menu-item ${selectedApproach === 'Approach 4' ? 'active' : ''}`}
-              onClick={() => setSelectedApproach('Approach 4')}
-            >
-              <span className="approach-number">4</span>
-              <span className="approach-name">Approach 4</span>
-              {selectedApproach === 'Approach 4' && <span className="approach-check">✓</span>}
-            </div>
           </div>
         )}
         <button 
@@ -864,22 +848,6 @@ function App() {
               <span className="approach-number">2</span>
               <span className="approach-name">Updated UX</span>
               {selectedApproach === 'Updated UX' && <span className="approach-check">✓</span>}
-            </div>
-            <div 
-              className={`prototype-menu-item ${selectedApproach === 'Approach 3' ? 'active' : ''}`}
-              onClick={() => setSelectedApproach('Approach 3')}
-            >
-              <span className="approach-number">3</span>
-              <span className="approach-name">Approach 3</span>
-              {selectedApproach === 'Approach 3' && <span className="approach-check">✓</span>}
-            </div>
-            <div 
-              className={`prototype-menu-item ${selectedApproach === 'Approach 4' ? 'active' : ''}`}
-              onClick={() => setSelectedApproach('Approach 4')}
-            >
-              <span className="approach-number">4</span>
-              <span className="approach-name">Approach 4</span>
-              {selectedApproach === 'Approach 4' && <span className="approach-check">✓</span>}
             </div>
           </div>
         )}
