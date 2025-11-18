@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import gifExplanation from './assets/gif-explanation.gif'
+import callingWindowHereGif from './assets/calling-window-here.gif'
 
 function App() {
   const [isCallingDropdownOpen, setIsCallingDropdownOpen] = useState(false)
@@ -607,6 +608,7 @@ function App() {
                     <div className="swapped-all-set-container">
                       <h1 className="swapped-all-set-title">You're all set</h1>
                       <p className="swapped-all-set-subtitle">Your calling experience is in the window</p>
+                      <img src={callingWindowHereGif} alt="Calling window location" className="explanation-gif" />
                       <p className="swapped-all-set-keep-open">Keep the calling window open in the background</p>
                       <button className="enable-calling-here-btn" onClick={handleSwapUI}>ENABLE CALLING HERE</button>
                     </div>
